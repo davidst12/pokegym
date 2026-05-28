@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build.sh",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Run",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run.sh",
+            "dependsOn": "Build"
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/clean.sh"
+        },
+        {
+            "label": "Tests",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/tests.sh"
+        },
+        {
+            "label": "Coverage",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/coverage.sh",
+            "group": "test"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+Checks: >
+  google-*,
+  clang-analyzer-*,
+  bugprone-*,
+  modernize-*,
+  performance-*,
+  readability-*
+
+WarningsAsErrors: ""
+
+HeaderFilterRegex: ".(game|tests)/.*"

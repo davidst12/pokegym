@@ -1,0 +1,8 @@
+# Build
+build/
+
+# Coverage
+coverage/
+
+# macOS
+.DS_Store
