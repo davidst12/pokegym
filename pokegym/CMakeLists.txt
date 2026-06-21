@@ -2,7 +2,12 @@ add_library(pokegym_lib)
 
 target_sources(pokegym_lib
     PRIVATE
-        src/math.cpp
+        src/pokemon/Pokemon.cpp
+        src/pokemon/Move.cpp
+        src/trainer/Trainer.cpp
+        src/battle/Battle.cpp
+        src/battle/BattleEngine.cpp
+        src/battle/DamageCalculator.cpp
 )
 
 target_include_directories(pokegym_lib

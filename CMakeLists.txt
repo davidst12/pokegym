@@ -44,7 +44,7 @@ if(ENABLE_COVERAGE)
 endif()
 
 add_subdirectory(third_party)
-add_subdirectory(game)
+add_subdirectory(pokegym)
 
 option(POKEGYM_BUILD_TESTS "Build tests" ON)
 
