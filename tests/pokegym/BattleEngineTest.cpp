@@ -4,12 +4,17 @@
 #include "pokegym/battle/BattleEngine.hpp"
 #include "pokegym/pokemon/Move.hpp"
 #include "pokegym/pokemon/Pokemon.hpp"
+#include "pokegym/presentation/ConsoleActionSelector.hpp"
+#include "pokegym/presentation/ConsoleBattleRenderer.hpp"
+#include "pokegym/trainer/RandomActionSelector.hpp"
 #include "pokegym/trainer/Trainer.hpp"
 
 using pokegym::battle::Battle;
 using pokegym::battle::BattleEngine;
 using pokegym::pokemon::Move;
 using pokegym::pokemon::Pokemon;
+using pokegym::presentation::ConsoleActionSelector;
+using pokegym::trainer::RandomActionSelector;
 using pokegym::trainer::Trainer;
 
 TEST(PokemonTest, Constructor) {
@@ -28,12 +33,17 @@ TEST(PokemonTest, Constructor) {
     std::vector<Pokemon> brook_team{geodude};
     std::vector<Pokemon> player_team{pikachu};
 
-    Trainer brook(brook_name, brook_team);
-    Trainer player(player_name, player_team);
+    RandomActionSelector random_selector;
+    ConsoleActionSelector console_selector;
+
+    Trainer brook(brook_name, brook_team, &random_selector);
+    Trainer player(player_name, player_team, &console_selector);
 
     Battle battle(&player, &brook);
 
     BattleEngine battle_engine;
+    pokegym::presentation::ConsoleBattleRenderer console_renderer;
+    battle_engine.addObserver(&console_renderer);
     battle_engine.run(battle);
 
     EXPECT_EQ(2 + 2, 5);

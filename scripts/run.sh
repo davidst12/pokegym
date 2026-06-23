@@ -2,4 +2,4 @@
 
 set -e
 
-./build/game/pokegym
+./build/pokegym/pokegym

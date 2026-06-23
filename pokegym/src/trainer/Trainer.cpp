@@ -4,14 +4,15 @@
 
 namespace pokegym::trainer {
 
-Trainer::Trainer(const std::string& name, std::vector<pokegym::pokemon::Pokemon>& team)
-    : name_(name), team_(std::move(team)), active_pokemon_(team_.data()) {}
+Trainer::Trainer(const std::string& name, std::vector<pokegym::pokemon::Pokemon>& team,
+                 ActionSelector* action_selector)
+    : name_(name),
+      team_(std::move(team)),
+      active_pokemon_(team_.data()),
+      action_selector_(action_selector) {}
 
-auto Trainer::chooseAction() -> Action {
-    Action action;
-    action.type = Action::Type::Attack;
-    action.index = 0;  // Always choose the first move for now
-    return action;
+auto Trainer::chooseAction(Action::TrainerType trainer_type) -> Action {
+    return action_selector_->selectAction(*active_pokemon_);
 }
 
 auto Trainer::getActivePokemon() const -> Pokemon* {
