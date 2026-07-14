@@ -20,6 +20,7 @@ class Pokemon {
     auto getHp() const -> int;
     auto getCurrentHp() const -> int;
     auto getMoves() const -> const std::vector<Move>&;
+    auto getMovesNames() const -> const std::vector<std::string>;
 
     auto takeDamage(int damage) -> void;
 

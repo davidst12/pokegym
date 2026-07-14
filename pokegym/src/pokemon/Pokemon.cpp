@@ -40,4 +40,12 @@ auto Pokemon::getMoves() const -> const std::vector<Move>& {
     return moves_;
 }
 
+auto Pokemon::getMovesNames() const -> const std::vector<std::string> {
+    std::vector<std::string> moves_names;
+    for (const auto& move : moves_) {
+        moves_names.push_back(move.getName());
+    }
+    return moves_names;
+}
+
 }  // namespace pokegym::pokemon

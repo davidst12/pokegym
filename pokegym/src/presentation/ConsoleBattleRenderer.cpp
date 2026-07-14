@@ -5,68 +5,55 @@
 namespace pokegym::presentation {
 
 auto ConsoleBattleRenderer::onBattleEvent(const pokegym::battle::BattleEvent& event) -> void {
-    switch (event.type) {
-        case pokegym::battle::BattleEventType::BattleStarts:
-            std::cout << "You are challenged by Rival " << event.battle->getOpponent()->getName()
-                      << "!" << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerNewPokemon:
-            std::cout << "Go! " << event.battle->getPlayer()->getActivePokemon()->getName() << "!"
-                      << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentNewPokemon:
-            std::cout << "Rival " << event.battle->getOpponent()->getName() << " sent out "
-                      << event.battle->getOpponent()->getActivePokemon()->getName() << "!"
-                      << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerSelectsAction:
-            std::cout << "What will " << event.battle->getPlayer()->getActivePokemon()->getName()
-                      << " do?" << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentSelectsAction:
-            std::cout << "Opponent selected an action." << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerSelectsMove:
-            std::cout << "Player selected a move." << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentSelectsMove:
-            std::cout << "Opponent selected a move." << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerAttacks:
-            std::cout << event.battle->getPlayer()->getActivePokemon()->getName() << " used "
-                      << event.move_name << "!" << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentAttacks:
-            std::cout << "The foe's " << event.battle->getOpponent()->getActivePokemon()->getName()
-                      << " used " << event.move_name << "!" << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerPokemonNewHp:
-            std::cout << event.battle->getPlayer()->getActivePokemon()->getName() << " has "
-                      << event.battle->getPlayer()->getActivePokemon()->getCurrentHp()
-                      << " HP left." << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentPokemonNewHp:
-            std::cout << event.battle->getOpponent()->getActivePokemon()->getName() << " has "
-                      << event.battle->getOpponent()->getActivePokemon()->getCurrentHp()
-                      << " HP left." << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerPokemonFainted:
-            std::cout << event.battle->getPlayer()->getActivePokemon()->getName() << " fainted!"
-                      << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentPokemonFainted:  // Fixed the typo here
-            std::cout << "The foe's " << event.battle->getOpponent()->getActivePokemon()->getName()
-                      << " fainted!" << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::PlayerWins:
-            std::cout << event.battle->getPlayer()->getName() << " wins the battle!" << std::endl;
-            break;
-        case pokegym::battle::BattleEventType::OpponentWins:
-            std::cout << event.battle->getOpponent()->getName() << " wins the battle!" << std::endl;
-            break;
-        default:
-            std::cout << "Unknown battle event." << std::endl;
-            break;
+    std::visit([&](auto&& event) { processEvent(event); }, event);
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::BattleStartsEvent& event) -> void {
+    std::cout << "You are challenged by Rival " << event.opponent_name << "!" << std::endl;
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::PokemonSentOutEvent& event)
+    -> void {
+    if (event.side == pokegym::battle::Side::Player) {
+        std::cout << "Go! " << event.pokemon.getName() << "!" << std::endl;
+    } else {
+        std::cout << "Rival sent out " << event.pokemon.getName() << "!" << std::endl;
+    }
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::ActionRequestEvent& event) -> void {
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::MoveUsedEvent& event) -> void {
+    if (event.side == pokegym::battle::Side::Player) {
+        std::cout << "Used " << event.move_name << "!" << std::endl;
+    } else {
+        std::cout << "Rival used " << event.move_name << "!" << std::endl;
+    }
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::DamageEvent& event) -> void {
+    if (event.side == pokegym::battle::Side::Player) {
+        std::cout << "Player pokemon has " << event.new_hp << " HP left." << std::endl;
+    } else {
+        std::cout << "Rival pokemon has " << event.new_hp << " HP left." << std::endl;
+    }
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::PokemonFaintedEvent& event)
+    -> void {
+    if (event.side == pokegym::battle::Side::Player) {
+        std::cout << "Player pokemon has fainted!" << std::endl;
+    } else {
+        std::cout << "Rival pokemon has fainted!" << std::endl;
+    }
+}
+
+auto ConsoleBattleRenderer::processEvent(const pokegym::battle::BattleWinEvent& event) -> void {
+    if (event.side == pokegym::battle::Side::Player) {
+        std::cout << "Player wins the battle!" << std::endl;
+    } else {
+        std::cout << "Rival wins the battle!" << std::endl;
     }
 }
 

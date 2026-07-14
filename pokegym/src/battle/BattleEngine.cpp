@@ -14,9 +14,9 @@ using pokegym::pokemon::Pokemon;
 BattleEngine::BattleEngine() = default;
 
 auto BattleEngine::run(Battle& battle) -> Result {
-    notifyObservers(BattleEvent{BattleEventType::BattleStarts, &battle});
-    notifyObservers(BattleEvent{BattleEventType::OpponentNewPokemon, &battle});
-    notifyObservers(BattleEvent{BattleEventType::PlayerNewPokemon, &battle});
+    notifyObservers(BattleStartsEvent{battle.getOpponent()->getName()});
+    notifyObservers(PokemonSentOutEvent{Side::Opponent, *battle.getOpponent()->getActivePokemon()});
+    notifyObservers(PokemonSentOutEvent{Side::Player, *battle.getPlayer()->getActivePokemon()});
     while (battle.getResult() == Result::Undefined) {
         executeTurn(battle);
 
@@ -39,10 +39,9 @@ auto BattleEngine::executeTurn(Battle& battle) -> void {
 
         // 3.5 Check if pokemon target fainted and if the battle is finished
         if (target->getCurrentHp() <= 0) {
-            auto event_type = (action.trainer_type == Action::TrainerType::Player)
-                                  ? BattleEventType::OpponentPokemonFainted
-                                  : BattleEventType::PlayerPokemonFainted;
-            notifyObservers(BattleEvent{event_type, &battle});
+            auto side = (action.trainer_type == Action::TrainerType::Player) ? Side::Opponent
+                                                                             : Side::Player;
+            notifyObservers(PokemonFaintedEvent{side});
             break;
         }
     }
@@ -50,10 +49,11 @@ auto BattleEngine::executeTurn(Battle& battle) -> void {
 
 auto BattleEngine::requestActions(Battle& battle)
     -> std::vector<std::tuple<Pokemon*, Action, Pokemon*>> {
-    notifyObservers(BattleEvent{BattleEventType::PlayerSelectsAction, &battle});
+    notifyObservers(ActionRequestEvent{Action::actionTypesToStringList(),
+                                       battle.getPlayer()->getActivePokemon()->getMovesNames()});
     // 1. Get actions from both trainers (player and opponent)
     Action player_action = battle.getPlayer()->chooseAction(Action::TrainerType::Player);
-    notifyObservers(BattleEvent{BattleEventType::OpponentSelectsAction, &battle});
+    // notifyObservers(BattleEvent{BattleEventType::OpponentSelectsAction, &battle});
     Action opponent_action = battle.getOpponent()->chooseAction(Action::TrainerType::Opponent);
 
     std::tuple<Pokemon*, Action, Pokemon*> first_action{battle.getPlayer()->getActivePokemon(),
@@ -75,30 +75,26 @@ auto BattleEngine::determineActionOrder(
 auto BattleEngine::executeAction(Battle& battle, Pokemon* pokemon, const Action& action,
                                  Pokemon* target) -> void {
     if (action.type == Action::Type::Attack) {
-        auto event_type = (action.trainer_type == Action::TrainerType::Player)
-                              ? BattleEventType::PlayerAttacks
-                              : BattleEventType::OpponentAttacks;
-        notifyObservers(
-            BattleEvent{event_type, &battle, pokemon->getMoves()[action.index].getName()});
+        auto side =
+            (action.trainer_type == Action::TrainerType::Player) ? Side::Player : Side::Opponent;
+        notifyObservers(MoveUsedEvent{side, pokemon->getMoves()[action.index].getName()});
         int damage =
             DamageCalculator::calculateDamage(*pokemon, *target, pokemon->getMoves()[action.index]);
         target->takeDamage(damage);
 
-        event_type = (action.trainer_type == Action::TrainerType::Player)
-                         ? BattleEventType::OpponentPokemonNewHp
-                         : BattleEventType::PlayerPokemonNewHp;
+        side = (action.trainer_type == Action::TrainerType::Player) ? Side::Opponent : Side::Player;
 
-        notifyObservers(BattleEvent{event_type, &battle});
+        notifyObservers(DamageEvent{side, target->getCurrentHp()});
     }
 }
 
 auto BattleEngine::checkBattleFinished(Battle& battle) -> void {
     if (battle.getPlayer()->getActivePokemon()->getCurrentHp() <= 0) {
         battle.setResult(Result::OpponentWin);
-        notifyObservers(BattleEvent{BattleEventType::OpponentWins, &battle});
+        notifyObservers(BattleWinEvent{Side::Opponent});
     } else if (battle.getOpponent()->getActivePokemon()->getCurrentHp() <= 0) {
         battle.setResult(Result::PlayerWin);
-        notifyObservers(BattleEvent{BattleEventType::PlayerWins, &battle});
+        notifyObservers(BattleWinEvent{Side::Player});
     }
 }
 

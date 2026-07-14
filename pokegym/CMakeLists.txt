@@ -11,12 +11,20 @@ target_sources(pokegym_lib
         src/battle/DamageCalculator.cpp
         src/presentation/ConsoleBattleRenderer.cpp
         src/presentation/ConsoleActionSelector.cpp
+        src/presentation/SdlActionSelector.cpp
         src/presentation/SdlBattleRenderer.cpp
 )
 
 target_include_directories(pokegym_lib
     PUBLIC
         include
+)
+
+target_link_libraries(pokegym_lib
+    PUBLIC
+        SDL2::SDL2
+        SDL2_ttf::SDL2_ttf
+        SDL2_image::SDL2_image
 )
 
 add_executable(pokegym)
