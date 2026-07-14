@@ -44,7 +44,9 @@ if(ENABLE_COVERAGE)
 endif()
 
 add_subdirectory(third_party)
-add_subdirectory(pokegym)
+add_subdirectory(libs/BattleEngine)
+add_subdirectory(libs/BattleRenderer)
+add_subdirectory(apps/PokeGymApp)
 
 option(POKEGYM_BUILD_TESTS "Build tests" ON)
 

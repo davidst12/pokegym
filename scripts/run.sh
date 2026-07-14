@@ -2,4 +2,4 @@
 
 set -e
 
-./build/pokegym/pokegym
+./build/apps/PokeGymApp/pokegym

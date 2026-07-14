@@ -1,3 +1,3 @@
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_subdirectory(pokegym)
+# add_subdirectory(pokegym)

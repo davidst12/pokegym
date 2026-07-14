@@ -22,7 +22,7 @@ ctest --test-dir $BUILD_DIR --output-on-failure
 
 gcovr \
     --root . \
-    --filter "game/" \
+    --filter "libs/" \
     --exclude ".*main.cpp" \
     --html-details $COVERAGE_DIR/coverage.html \
     --print-summary
