@@ -1,0 +1,78 @@
+[
+    {
+        "move": "Blizzard",
+        "power": 120
+    },
+    {
+        "move": "Body Slam",
+        "power": 85
+    },
+    {
+        "move": "Double-Edge",
+        "power": 100
+    },
+    {
+        "move": "Fire Blast",
+        "power": 120
+    },
+    {
+        "move": "Flamethrower",
+        "power": 95
+    },
+    {
+        "move": "Harden",
+        "power": 0
+    },
+    {
+        "move": "Hyper Beam",
+        "power": 150
+    },
+    {
+        "move": "Hydro Pump",
+        "power": 120
+    },
+    {
+        "move": "Leech Seed",
+        "power": 0
+    },
+    {
+        "move": "Mega Drain",
+        "power": 40
+    },
+    {
+        "move": "Psychic",
+        "power": 90
+    },
+    {
+        "move": "Sleep Powder",
+        "power": 0
+    },
+    {
+        "move": "Slash",
+        "power": 70
+    },
+    {
+        "move": "Solar Beam",
+        "power": 120
+    },
+    {
+        "move": "String Shot",
+        "power": 0
+    },
+    {
+        "move": "Supersonic",
+        "power": 0
+    },
+    {
+        "move": "Surf",
+        "power": 95
+    },
+    {
+        "move": "Swords Dance",
+        "power": 0
+    },
+    {
+        "move": "Tackle",
+        "power": 35
+    }
+]

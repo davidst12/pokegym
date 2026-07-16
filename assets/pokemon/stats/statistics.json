@@ -1,0 +1,215 @@
+[
+    {
+        "id": "001",
+        "name": "Bulbasaur",
+        "stats": {
+            "hp": 293,
+            "speed": 189,
+            "attack": 197,
+            "defense": 197,
+            "special_attack": 229,
+            "special_defense": 229
+        },
+        "moves": [
+            "Solar Beam",
+            "Swords Dance",
+            "Body Slam",
+            "Double-Edge"
+        ]
+    },
+    {
+        "id": "002",
+        "name": "Ivysaur",
+        "stats": {
+            "hp": 323,
+            "speed": 219,
+            "attack": 223,
+            "defense": 223,
+            "special_attack": 259,
+            "special_defense": 259
+        },
+        "moves": [
+            "Solar Beam",
+            "Sleep Powder",
+            "Leech Seed",
+            "Double-Edge"
+        ]
+    },
+    {
+        "id": "003",
+        "name": "Venusaur",
+        "stats": {
+            "hp": 363,
+            "speed": 259,
+            "attack": 263,
+            "defense": 265,
+            "special_attack": 299,
+            "special_defense": 299
+        },
+        "moves": [
+            "Solar Beam",
+            "Sleep Powder",
+            "Double-Edge",
+            "Hyper Beam"
+        ]
+    },
+    {
+        "id": "004",
+        "name": "Charmander",
+        "stats": {
+            "hp": 281,
+            "speed": 229,
+            "attack": 203,
+            "defense": 185,
+            "special_attack": 219,
+            "special_defense": 199
+        },
+        "moves": [
+            "Fire Blast",
+            "Swords Dance",
+            "Slash",
+            "Flamethrower"
+        ]
+    },
+    {
+        "id": "005",
+        "name": "Charmeleon",
+        "stats": {
+            "hp": 319,
+            "speed": 259,
+            "attack": 227,
+            "defense": 215,
+            "special_attack": 259,
+            "special_defense": 229
+        },
+        "moves": [
+            "Fire Blast",
+            "Swords Dance",
+            "Slash",
+            "Flamethrower"
+        ]
+    },
+    {
+        "id": "006",
+        "name": "Charizard",
+        "stats": {
+            "hp": 359,
+            "speed": 299,
+            "attack": 267,
+            "defense": 255,
+            "special_attack": 317,
+            "special_defense": 269
+        },
+        "moves": [
+            "Fire Blast",
+            "Swords Dance",
+            "Slash",
+            "Hyper Beam"
+        ]
+    },
+    {
+        "id": "007",
+        "name": "Squirtle",
+        "stats": {
+            "hp": 291,
+            "speed": 185,
+            "attack": 195,
+            "defense": 229,
+            "special_attack": 199,
+            "special_defense": 227
+        },
+        "moves": [
+            "Hydro Pump",
+            "Blizzard",
+            "Surf",
+            "Body Slam"
+        ]
+    },
+    {
+        "id": "008",
+        "name": "Wartortle",
+        "stats": {
+            "hp": 321,
+            "speed": 215,
+            "attack": 225,
+            "defense": 259,
+            "special_attack": 229,
+            "special_defense": 259
+        },
+        "moves": [
+            "Hydro Pump",
+            "Blizzard",
+            "Surf",
+            "Body Slam"
+        ]
+    },
+    {
+        "id": "009",
+        "name": "Blastoise",
+        "stats": {
+            "hp": 361,
+            "speed": 255,
+            "attack": 265,
+            "defense": 299,
+            "special_attack": 269,
+            "special_defense": 309
+        },
+        "moves": [
+            "Hydro Pump",
+            "Blizzard",
+            "Surf",
+            "Hyper Beam"
+        ]
+    },
+    {
+        "id": "010",
+        "name": "Caterpie",
+        "stats": {
+            "hp": 293,
+            "speed": 189,
+            "attack": 159,
+            "defense": 169,
+            "special_attack": 139,
+            "special_defense": 139
+        },
+        "moves": [
+            "Tackle",
+            "String Shot"
+        ]
+    },
+    {
+        "id": "011",
+        "name": "Metapod",
+        "stats": {
+            "hp": 303,
+            "speed": 159,
+            "attack": 139,
+            "defense": 209,
+            "special_attack": 149,
+            "special_defense": 149
+        },
+        "moves": [
+            "Harden",
+            "Tackle",
+            "String Shot"
+        ]
+    },
+    {
+        "id": "012",
+        "name": "Butterfree",
+        "stats": {
+            "hp": 323,
+            "speed": 239,
+            "attack": 189,
+            "defense": 199,
+            "special_attack": 259,
+            "special_defense": 259
+        },
+        "moves": [
+            "Psychic",
+            "Sleep Powder",
+            "Mega Drain",
+            "Supersonic"
+        ]
+    }
+]

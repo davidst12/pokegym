@@ -57,6 +57,8 @@ SdlBattleRenderer::SdlBattleRenderer(SdlActionSelector& action_selector)
     if (font_small_ == nullptr || font_medium_ == nullptr) {
         std::cerr << "Error cargando fuente: " << TTF_GetError() << "\n";
     }
+
+    texture_manager_ = std::make_unique<TextureManager>(renderer_);
 }
 
 SdlBattleRenderer::~SdlBattleRenderer() {
@@ -90,8 +92,8 @@ auto SdlBattleRenderer::run() -> void {
 
         drawBackground(renderer_, "assets/battle/battle_blank_template.jpg");
         drawDialogTextBox(renderer_);
-        drawPlayertPokemon(renderer_, "assets/pokemon/scizor/back.png");
-        drawOpponentPokemon(renderer_, "assets/pokemon/charizard/front.png");
+        drawPlayertPokemon(renderer_);
+        drawOpponentPokemon(renderer_);
 
         SDL_RenderPresent(renderer_);
 
@@ -174,21 +176,14 @@ auto SdlBattleRenderer::drawDialogTextBox(SDL_Renderer* renderer) -> void {
     }
 }
 
-auto SdlBattleRenderer::drawPlayertPokemon(SDL_Renderer* renderer, const char* path) -> void {
+auto SdlBattleRenderer::drawPlayertPokemon(SDL_Renderer* renderer) -> void {
     if (!player_pokemon_.has_value()) {
         return;
     }
 
     if (player_pokemon_.value().texture == nullptr) {
-        SDL_Surface* player_pokemon_surface = IMG_Load(path);
-
-        if (!player_pokemon_surface)
-            return;
-
         player_pokemon_.value().texture =
-            SDL_CreateTextureFromSurface(renderer, player_pokemon_surface);
-
-        SDL_FreeSurface(player_pokemon_surface);
+            texture_manager_->getTexture(player_pokemon_.value().name, false);
     }
 
     SDL_Rect player_pokemon_rect;
@@ -216,21 +211,14 @@ auto SdlBattleRenderer::drawPlayertPokemon(SDL_Renderer* renderer, const char* p
     SDL_RenderCopy(renderer, ply_pk_name_texture, nullptr, &ply_pk_name_box);
 }
 
-auto SdlBattleRenderer::drawOpponentPokemon(SDL_Renderer* renderer, const char* path) -> void {
+auto SdlBattleRenderer::drawOpponentPokemon(SDL_Renderer* renderer) -> void {
     if (!opponent_pokemon_.has_value()) {
         return;
     }
 
     if (opponent_pokemon_.value().texture == nullptr) {
-        SDL_Surface* opponent_pokemon_surface = IMG_Load(path);
-
-        if (!opponent_pokemon_surface)
-            return;
-
         opponent_pokemon_.value().texture =
-            SDL_CreateTextureFromSurface(renderer, opponent_pokemon_surface);
-
-        SDL_FreeSurface(opponent_pokemon_surface);
+            texture_manager_->getTexture(opponent_pokemon_.value().name, true);
     }
 
     SDL_Rect opponent_pokemon_rect;

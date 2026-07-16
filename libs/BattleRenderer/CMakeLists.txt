@@ -7,6 +7,7 @@ target_sources(battle_renderer_lib
         src/console/ConsoleActionSelector.cpp
         src/sdl/SdlActionSelector.cpp
         src/sdl/SdlBattleRenderer.cpp
+        src/sdl/TextureManager.cpp
 )
 
 target_include_directories(battle_engine_lib

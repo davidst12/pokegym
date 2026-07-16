@@ -12,6 +12,7 @@
 #include "BattleEngine/battle/BattleObserver.hpp"
 #include "BattleEngine/pokemon/Pokemon.hpp"
 #include "BattleRenderer/sdl/SdlActionSelector.hpp"
+#include "BattleRenderer/sdl/TextureManager.hpp"
 
 namespace pokegym::renderer {
 
@@ -41,8 +42,8 @@ class SdlBattleRenderer : public pokegym::engine::battle::BattleObserver {
     auto onBattleEvent(const pokegym::engine::battle::BattleEvent& event) -> void override;
 
    private:
-    auto drawOpponentPokemon(SDL_Renderer* renderer, const char* path) -> void;
-    auto drawPlayertPokemon(SDL_Renderer* renderer, const char* path) -> void;
+    auto drawOpponentPokemon(SDL_Renderer* renderer) -> void;
+    auto drawPlayertPokemon(SDL_Renderer* renderer) -> void;
     auto drawDialogTextBox(SDL_Renderer* renderer) -> void;
     auto drawBackground(SDL_Renderer* renderer, const char* path) -> void;
 
@@ -74,6 +75,8 @@ class SdlBattleRenderer : public pokegym::engine::battle::BattleObserver {
     std::string dialog_text_ = " ";
     std::optional<PokemonVisualization> player_pokemon_ = std::nullopt;
     std::optional<PokemonVisualization> opponent_pokemon_ = std::nullopt;
+
+    std::unique_ptr<TextureManager> texture_manager_ = nullptr;
 };
 
 }  // namespace pokegym::renderer

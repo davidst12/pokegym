@@ -10,6 +10,7 @@ target_sources(battle_engine_lib
         src/battle/Battle.cpp
         src/battle/BattleEngine.cpp
         src/battle/DamageCalculator.cpp
+        src/manager/PokemonManager.cpp
 )
 
 target_include_directories(battle_engine_lib
@@ -20,4 +21,5 @@ target_include_directories(battle_engine_lib
 
 target_link_libraries(battle_engine_lib
     PUBLIC
+        nlohmann_json::nlohmann_json
 )

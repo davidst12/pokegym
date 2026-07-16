@@ -2,6 +2,7 @@
 
 #include "BattleEngine/battle/Battle.hpp"
 #include "BattleEngine/battle/BattleEngine.hpp"
+#include "BattleEngine/manager/PokemonManager.hpp"
 #include "BattleEngine/pokemon/Move.hpp"
 #include "BattleEngine/pokemon/Pokemon.hpp"
 #include "BattleEngine/trainer/RandomActionSelector.hpp"
@@ -22,20 +23,19 @@ using pokegym::renderer::SdlActionSelector;
 using pokegym::renderer::SdlBattleRenderer;
 
 int main() {
-    const std::string pikachu_name = "Pikachu";
-    const std::string geodude_name = "Geodude";
+    const std::string player_pk_name = "Charizard";
+    const std::string opponent_pk_name = "Blastoise";
     const std::string brook_name = "Brook";
     const std::string player_name = "David";
-    Move thunderbolt("Thunderbolt", 90);
-    Move quick_attack("Quick Attack", 40);
-    std::vector<Move> pikachu_moves{thunderbolt, quick_attack};
-    std::vector<Move> geodude_moves{thunderbolt, quick_attack};
 
-    Pokemon pikachu(pikachu_name, 90, 55, 400, 35, pikachu_moves);
-    Pokemon geodude(geodude_name, 20, 80, 100, 50, geodude_moves);
+    pokegym::engine::manager::PokemonManager pokemon_manager;
+    pokemon_manager.loadPokemonData();
 
-    std::vector<Pokemon> brook_team{geodude};
-    std::vector<Pokemon> player_team{pikachu};
+    auto player_pk_opt = pokemon_manager.getPokemonByName(player_pk_name);
+    auto opponent_pk_opt = pokemon_manager.getPokemonByName(opponent_pk_name);
+
+    std::vector<Pokemon> brook_team{opponent_pk_opt.value()};
+    std::vector<Pokemon> player_team{player_pk_opt.value()};
 
     RandomActionSelector random_selector;
     SdlActionSelector sdl_selector;

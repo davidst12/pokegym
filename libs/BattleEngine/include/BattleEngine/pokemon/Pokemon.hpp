@@ -9,10 +9,11 @@ namespace pokegym::engine::pokemon {
 
 class Pokemon {
    public:
-    explicit Pokemon(const std::string& name, int velocity, int attack, int defense, int hp,
-                     std::vector<Move>& moves);
+    explicit Pokemon(const std::string& id, const std::string& name, int velocity, int attack,
+                     int defense, int hp, std::vector<Move>& moves);
     ~Pokemon() = default;
 
+    auto getId() const -> const std::string&;
     auto getName() const -> const std::string&;
     auto getVelocity() const -> int;
     auto getAttack() const -> int;
@@ -25,6 +26,7 @@ class Pokemon {
     auto takeDamage(int damage) -> void;
 
    private:
+    std::string id_;
     std::string name_;
     int velocity_;
     int attack_;

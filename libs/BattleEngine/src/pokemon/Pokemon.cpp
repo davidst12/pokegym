@@ -2,15 +2,20 @@
 
 namespace pokegym::engine::pokemon {
 
-Pokemon::Pokemon(const std::string& name, int velocity, int attack, int defense, int hp,
-                 std::vector<Move>& moves)
-    : name_(name),
+Pokemon::Pokemon(const std::string& id, const std::string& name, int velocity, int attack,
+                 int defense, int hp, std::vector<Move>& moves)
+    : id_(id),
+      name_(name),
       velocity_(velocity),
       attack_(attack),
       defense_(defense),
       hp_(hp),
       current_hp_(hp),
       moves_(std::move(moves)) {}
+
+auto Pokemon::getId() const -> const std::string& {
+    return id_;
+}
 
 auto Pokemon::getName() const -> const std::string& {
     return name_;
