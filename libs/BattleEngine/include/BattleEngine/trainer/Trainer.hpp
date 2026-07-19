@@ -21,7 +21,9 @@ class Trainer {
     auto getTeam() -> std::vector<Pokemon>&;
     auto chooseAction(Action::TrainerType trainer_type) -> Action;
     auto setActivePokemon(Pokemon* pokemon) -> void;
+    auto setActivePokemon(int index) -> void;
     auto getActivePokemon() const -> Pokemon*;
+    auto hasPokemonsAlive() -> bool;
 
    private:
     std::string name_;

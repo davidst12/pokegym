@@ -24,12 +24,12 @@ class BattleEngine {
 
    private:
     auto executeTurn(Battle& battle) -> void;
-    auto requestActions(Battle& battle) -> std::vector<std::tuple<Pokemon*, Action, Pokemon*>>;
-    auto determineActionOrder(std::vector<std::tuple<Pokemon*, Action, Pokemon*>>& actions) -> void;
-    auto executeAction(Battle& battle, Pokemon* pokemon, const Action& action, Pokemon* target)
-        -> void;
+    auto requestActions(Battle& battle) -> std::vector<Action>;
+    auto determineActionOrder(Battle& battle, std::vector<Action>& actions) -> void;
+    auto executeAction(Battle& battle, Action action) -> bool;
     auto checkBattleFinished(Battle& battle) -> void;
     auto notifyObservers(const BattleEvent& event) -> void;
+    auto processTurnResult(Battle& battle) -> void;
 
     std::vector<BattleObserver*> observers_;
 };

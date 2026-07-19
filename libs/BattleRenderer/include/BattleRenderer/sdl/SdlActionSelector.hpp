@@ -16,6 +16,7 @@ class SdlActionSelector : public ActionSelector {
     ~SdlActionSelector() = default;
 
     auto selectAction(const Pokemon& pokemon) -> Action override;
+    auto selectPokemon(const std::vector<Pokemon>& team) -> Action override;
     auto setAction(const Action& action) -> void;
 
    private:

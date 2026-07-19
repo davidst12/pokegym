@@ -16,6 +16,7 @@ class RandomActionSelector : public ActionSelector {
     ~RandomActionSelector() = default;
 
     auto selectAction(const Pokemon& pokemon) -> Action override;
+    auto selectPokemon(const std::vector<Pokemon>& team) -> Action override;
 };
 
 }  // namespace pokegym::engine::trainer

@@ -159,6 +159,22 @@ auto SdlBattleRenderer::drawDialogTextBox(SDL_Renderer* renderer) -> void {
 
             SDL_RenderCopy(renderer, action_text_texture, nullptr, &action_text_boxes[i]);
         }
+    } else if (action_animation_.is_action_requested &&
+               action_animation_.state == ActionRequestAnimation::State::ShowPokemons) {
+        std::vector<SDL_Rect> action_text_boxes{
+            {50, 455, 0, 0}, {width_ / 2, 455, 0, 0}, {50, 515, 0, 0}, {width_ / 2, 515, 0, 0}};
+        for (int i = 0; i < action_animation_.pokemon_prompt.size(); ++i) {
+            SDL_Color white{255, 255, 255, 255};
+            SDL_Surface* action_text_surface = TTF_RenderText_Solid(
+                font_medium_, action_animation_.pokemon_prompt[i].c_str(), white);
+            SDL_Texture* action_text_texture =
+                SDL_CreateTextureFromSurface(renderer, action_text_surface);
+
+            action_text_boxes[i].w = action_text_surface->w;
+            action_text_boxes[i].h = action_text_surface->h;
+
+            SDL_RenderCopy(renderer, action_text_texture, nullptr, &action_text_boxes[i]);
+        }
     } else {
         SDL_Color white{255, 255, 255, 255};
         SDL_Surface* dialog_text_surface =
@@ -179,6 +195,10 @@ auto SdlBattleRenderer::drawDialogTextBox(SDL_Renderer* renderer) -> void {
 auto SdlBattleRenderer::drawPlayertPokemon(SDL_Renderer* renderer) -> void {
     if (!player_pokemon_.has_value()) {
         return;
+    }
+
+    if (!player_pokemon_.value().is_drawn) {
+        player_pokemon_.value().texture = nullptr;
     }
 
     if (player_pokemon_.value().texture == nullptr) {
@@ -209,6 +229,8 @@ auto SdlBattleRenderer::drawPlayertPokemon(SDL_Renderer* renderer) -> void {
     ply_pk_name_box.h = ply_pk_name_surface->h;
 
     SDL_RenderCopy(renderer, ply_pk_name_texture, nullptr, &ply_pk_name_box);
+
+    player_pokemon_.value().is_drawn = true;
 }
 
 auto SdlBattleRenderer::drawOpponentPokemon(SDL_Renderer* renderer) -> void {
@@ -294,13 +316,15 @@ auto SdlBattleRenderer::processEvent(const pokegym::engine::battle::PokemonSentO
         player_pokemon_ = PokemonVisualization{.name = event.pokemon.getName(),
                                                .current_hp = event.pokemon.getCurrentHp(),
                                                .max_hp = event.pokemon.getHp(),
-                                               .texture = nullptr};
+                                               .texture = nullptr,
+                                               .is_drawn = false};
     } else {
         dialog_text_ = "Rival sent out " + event.pokemon.getName() + "!";
         opponent_pokemon_ = PokemonVisualization{.name = event.pokemon.getName(),
                                                  .current_hp = event.pokemon.getCurrentHp(),
                                                  .max_hp = event.pokemon.getHp(),
-                                                 .texture = nullptr};
+                                                 .texture = nullptr,
+                                                 .is_drawn = false};
     }
 }
 
@@ -316,6 +340,11 @@ auto SdlBattleRenderer::processEvent(const pokegym::engine::battle::ActionReques
     index = 1;
     for (const auto& move_name : event.move_names_list) {
         action_animation_.moves_prompt.push_back(std::to_string(index++) + ". " + move_name);
+    }
+    index = 1;
+    for (const auto& pokemon : event.pokemons_alive_list) {
+        action_animation_.pokemon_prompt.push_back(std::to_string(index++) + ". " +
+                                                   pokemon.getName());
     }
 }
 
@@ -352,6 +381,17 @@ auto SdlBattleRenderer::processEvent(const pokegym::engine::battle::PokemonFaint
     }
 }
 
+auto SdlBattleRenderer::processEvent(const pokegym::engine::battle::NewPokemonRequestEvent& event)
+    -> void {
+    action_animation_.is_action_requested = true;
+    action_animation_.state = ActionRequestAnimation::State::ShowPokemons;
+    int index = 1;
+    for (const auto& pokemon : event.pokemons_alive_list) {
+        action_animation_.pokemon_prompt.push_back(std::to_string(index++) + ". " +
+                                                   pokemon.getName());
+    }
+}
+
 auto SdlBattleRenderer::processEvent(const pokegym::engine::battle::BattleWinEvent& event) -> void {
     if (event.side == pokegym::engine::battle::Side::Player) {
         dialog_text_ = "Player wins the battle!";
@@ -367,11 +407,17 @@ auto SdlBattleRenderer::processActionInput(int selection) -> void {
             action_animation_.state = ActionRequestAnimation::State::ShowActions;
             break;
         case ActionRequestAnimation::State::ShowActions:
-            if (selection >= 1 && selection <= 3) {
-                action_animation_.state = ActionRequestAnimation::State::ShowMoves;
+            switch (selection) {
+                case 1:
+                    action_animation_.state = ActionRequestAnimation::State::ShowMoves;
+                    break;
+                case 2:
+                    action_animation_.state = ActionRequestAnimation::State::ShowPokemons;
+                    break;
+                default:
+                    break;
             }
             break;
-
         case ActionRequestAnimation::State::ShowMoves:
             if (selection >= 1 && selection <= 4) {
                 Action action{.trainer_type = engine::battle::Action::TrainerType::Player,
@@ -382,9 +428,22 @@ auto SdlBattleRenderer::processActionInput(int selection) -> void {
                 action_animation_.is_action_requested = false;
                 action_animation_.actions_prompt.clear();
                 action_animation_.moves_prompt.clear();
+                action_animation_.pokemon_prompt.clear();
             }
             break;
-
+        case ActionRequestAnimation::State::ShowPokemons:
+            if (selection >= 1 && selection <= 4) {
+                Action action{.trainer_type = engine::battle::Action::TrainerType::Player,
+                              .type = engine::battle::Action::Type::SwitchPokemon,
+                              .index = selection - 1};
+                action_selector_.setAction(action);
+                action_animation_.state = ActionRequestAnimation::State::Idle;
+                action_animation_.is_action_requested = false;
+                action_animation_.actions_prompt.clear();
+                action_animation_.moves_prompt.clear();
+                action_animation_.pokemon_prompt.clear();
+            }
+            break;
         case ActionRequestAnimation::State::Idle:
             break;
     }

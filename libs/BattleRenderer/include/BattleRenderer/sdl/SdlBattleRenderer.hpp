@@ -24,13 +24,21 @@ struct PokemonVisualization {
     int current_hp = 0;
     int max_hp = 0;
     SDL_Texture* texture = nullptr;
+    bool is_drawn = false;
 };
 
 struct ActionRequestAnimation {
-    enum class State { ShowQuestion, ShowActions, ShowMoves, Idle } state = State::Idle;
+    enum class State {
+        ShowQuestion,
+        ShowActions,
+        ShowMoves,
+        ShowPokemons,
+        Idle
+    } state = State::Idle;
     bool is_action_requested = false;
     std::vector<std::string> actions_prompt = {};
     std::vector<std::string> moves_prompt = {};
+    std::vector<std::string> pokemon_prompt = {};
 };
 
 class SdlBattleRenderer : public pokegym::engine::battle::BattleObserver {
@@ -55,6 +63,7 @@ class SdlBattleRenderer : public pokegym::engine::battle::BattleObserver {
     auto processEvent(const pokegym::engine::battle::MoveUsedEvent& event) -> void;
     auto processEvent(const pokegym::engine::battle::DamageEvent& event) -> void;
     auto processEvent(const pokegym::engine::battle::PokemonFaintedEvent& event) -> void;
+    auto processEvent(const pokegym::engine::battle::NewPokemonRequestEvent& event) -> void;
     auto processEvent(const pokegym::engine::battle::BattleWinEvent& event) -> void;
 
     auto processActionInput(int selection) -> void;

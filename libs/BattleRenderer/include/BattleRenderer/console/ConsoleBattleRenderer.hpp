@@ -21,6 +21,7 @@ class ConsoleBattleRenderer : public pokegym::engine::battle::BattleObserver {
     auto processEvent(const pokegym::engine::battle::MoveUsedEvent& event) -> void;
     auto processEvent(const pokegym::engine::battle::DamageEvent& event) -> void;
     auto processEvent(const pokegym::engine::battle::PokemonFaintedEvent& event) -> void;
+    auto processEvent(const pokegym::engine::battle::NewPokemonRequestEvent& event) -> void;
     auto processEvent(const pokegym::engine::battle::BattleWinEvent& event) -> void;
 };
 

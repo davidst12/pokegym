@@ -53,6 +53,9 @@ auto ConsoleBattleRenderer::processEvent(const pokegym::engine::battle::PokemonF
     }
 }
 
+auto ConsoleBattleRenderer::processEvent(
+    const pokegym::engine::battle::NewPokemonRequestEvent& event) -> void {}
+
 auto ConsoleBattleRenderer::processEvent(const pokegym::engine::battle::BattleWinEvent& event)
     -> void {
     if (event.side == pokegym::engine::battle::Side::Player) {

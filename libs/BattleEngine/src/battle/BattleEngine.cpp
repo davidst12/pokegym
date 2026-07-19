@@ -20,7 +20,7 @@ auto BattleEngine::run(Battle& battle) -> Result {
     notifyObservers(PokemonSentOutEvent{Side::Player, *battle.getPlayer()->getActivePokemon()});
     while (battle.getResult() == Result::Undefined) {
         executeTurn(battle);
-
+        processTurnResult(battle);
         checkBattleFinished(battle);
     }
 
@@ -32,69 +32,103 @@ auto BattleEngine::executeTurn(Battle& battle) -> void {
     auto actions = requestActions(battle);
 
     // 2. Determine the order of actions based on Pokémon speed
-    determineActionOrder(actions);
+    determineActionOrder(battle, actions);
 
     // 3. Execute actions in order
-    for (auto [pokemon, action, target] : actions) {
-        executeAction(battle, pokemon, action, target);
-
-        // 3.5 Check if pokemon target fainted and if the battle is finished
-        if (target->getCurrentHp() <= 0) {
-            auto side = (action.trainer_type == engine::battle::Action::TrainerType::Player)
-                            ? Side::Opponent
-                            : Side::Player;
-            notifyObservers(PokemonFaintedEvent{side});
+    for (auto action : actions) {
+        bool execute_next = executeAction(battle, action);
+        if (!execute_next)
             break;
+    }
+}
+
+auto BattleEngine::requestActions(Battle& battle) -> std::vector<Action> {
+    notifyObservers(ActionRequestEvent{Action::actionTypesToStringList(),
+                                       battle.getPlayer()->getActivePokemon()->getMovesNames(),
+                                       battle.getPlayer()->getTeam()});
+    // 1. Get actions from both trainers (player and opponent)
+    Action player_action = battle.getPlayer()->chooseAction(Action::TrainerType::Player);
+    Action opponent_action = battle.getOpponent()->chooseAction(Action::TrainerType::Opponent);
+
+    return {player_action, opponent_action};
+}
+
+auto BattleEngine::determineActionOrder(Battle& battle, std::vector<Action>& actions) -> void {
+    if (actions.at(0).type == Action::Type::SwitchPokemon) {
+        return;
+    } else if (actions.at(1).type == Action::Type::SwitchPokemon) {
+        std::swap(actions[0], actions[1]);
+    } else {
+        if (battle.getOpponent()->getActivePokemon()->getVelocity() >
+            battle.getPlayer()->getActivePokemon()->getVelocity()) {
+            std::swap(actions[0], actions[1]);
         }
     }
 }
 
-auto BattleEngine::requestActions(Battle& battle)
-    -> std::vector<std::tuple<Pokemon*, Action, Pokemon*>> {
-    notifyObservers(ActionRequestEvent{Action::actionTypesToStringList(),
-                                       battle.getPlayer()->getActivePokemon()->getMovesNames()});
-    // 1. Get actions from both trainers (player and opponent)
-    Action player_action = battle.getPlayer()->chooseAction(Action::TrainerType::Player);
-    // notifyObservers(BattleEvent{BattleEventType::OpponentSelectsAction, &battle});
-    Action opponent_action = battle.getOpponent()->chooseAction(Action::TrainerType::Opponent);
-
-    std::tuple<Pokemon*, Action, Pokemon*> first_action{battle.getPlayer()->getActivePokemon(),
-                                                        player_action,
-                                                        battle.getOpponent()->getActivePokemon()};
-    std::tuple<Pokemon*, Action, Pokemon*> second_action{battle.getOpponent()->getActivePokemon(),
-                                                         opponent_action,
-                                                         battle.getPlayer()->getActivePokemon()};
-    return {first_action, second_action};
-}
-
-auto BattleEngine::determineActionOrder(
-    std::vector<std::tuple<Pokemon*, Action, Pokemon*>>& actions) -> void {
-    std::sort(actions.begin(), actions.end(), [](const auto& a, const auto& b) {
-        return std::get<0>(a)->getVelocity() > std::get<0>(b)->getVelocity();
-    });
-}
-
-auto BattleEngine::executeAction(Battle& battle, Pokemon* pokemon, const Action& action,
-                                 Pokemon* target) -> void {
+auto BattleEngine::executeAction(Battle& battle, Action action) -> bool {
     if (action.type == Action::Type::Attack) {
-        auto side =
-            (action.trainer_type == Action::TrainerType::Player) ? Side::Player : Side::Opponent;
-        notifyObservers(MoveUsedEvent{side, pokemon->getMoves()[action.index].getName()});
-        int damage =
-            DamageCalculator::calculateDamage(*pokemon, *target, pokemon->getMoves()[action.index]);
-        target->takeDamage(damage);
+        Side side;
+        Pokemon* attacker;
+        Pokemon* defender;
+        if (action.trainer_type == Action::TrainerType::Player) {
+            side = Side::Player;
+            attacker = battle.getPlayer()->getActivePokemon();
+            defender = battle.getOpponent()->getActivePokemon();
+        } else {
+            side = Side::Opponent;
+            attacker = battle.getOpponent()->getActivePokemon();
+            defender = battle.getPlayer()->getActivePokemon();
+        }
+        notifyObservers(MoveUsedEvent{side, attacker->getMoves()[action.index].getName()});
+        int damage = DamageCalculator::calculateDamage(*attacker, *defender,
+                                                       attacker->getMoves()[action.index]);
+        defender->takeDamage(damage);
 
         side = (action.trainer_type == Action::TrainerType::Player) ? Side::Opponent : Side::Player;
 
-        notifyObservers(DamageEvent{side, target->getCurrentHp()});
+        notifyObservers(DamageEvent{side, defender->getCurrentHp()});
+
+        if (defender->getCurrentHp() == 0) {
+            notifyObservers(PokemonFaintedEvent{side});
+            return false;
+        }
+    } else if (action.type == Action::Type::SwitchPokemon) {
+        if (action.trainer_type == Action::TrainerType::Player) {
+            battle.getPlayer()->setActivePokemon(action.index);
+            notifyObservers(
+                PokemonSentOutEvent{Side::Player, *battle.getPlayer()->getActivePokemon()});
+        } else {
+            auto team = battle.getOpponent()->getTeam();
+            battle.getOpponent()->setActivePokemon(&team[action.index]);
+            notifyObservers(
+                PokemonSentOutEvent{Side::Opponent, *battle.getOpponent()->getActivePokemon()});
+        }
+    }
+    return true;
+}
+
+auto BattleEngine::processTurnResult(Battle& battle) -> void {
+    if (battle.getPlayer()->getActivePokemon()->getCurrentHp() <= 0 &&
+        battle.getPlayer()->hasPokemonsAlive()) {
+        notifyObservers(NewPokemonRequestEvent{battle.getPlayer()->getTeam()});
+        auto action = battle.getPlayer()->chooseAction(Action::TrainerType::Player);
+        battle.getPlayer()->setActivePokemon(action.index);
+        notifyObservers(PokemonSentOutEvent{Side::Player, *battle.getPlayer()->getActivePokemon()});
+    } else if (battle.getOpponent()->getActivePokemon()->getCurrentHp() <= 0 &&
+               battle.getOpponent()->hasPokemonsAlive()) {
+        auto action = battle.getOpponent()->chooseAction(Action::TrainerType::Opponent);
+        battle.getOpponent()->setActivePokemon(action.index);
+        notifyObservers(
+            PokemonSentOutEvent{Side::Opponent, *battle.getOpponent()->getActivePokemon()});
     }
 }
 
 auto BattleEngine::checkBattleFinished(Battle& battle) -> void {
-    if (battle.getPlayer()->getActivePokemon()->getCurrentHp() <= 0) {
+    if (!battle.getPlayer()->hasPokemonsAlive()) {
         battle.setResult(Result::OpponentWin);
         notifyObservers(BattleWinEvent{Side::Opponent});
-    } else if (battle.getOpponent()->getActivePokemon()->getCurrentHp() <= 0) {
+    } else if (!battle.getOpponent()->hasPokemonsAlive()) {
         battle.setResult(Result::PlayerWin);
         notifyObservers(BattleWinEvent{Side::Player});
     }

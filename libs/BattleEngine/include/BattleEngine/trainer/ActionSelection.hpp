@@ -13,6 +13,7 @@ class ActionSelector {
     virtual ~ActionSelector() = default;
 
     virtual auto selectAction(const Pokemon& pokemon) -> Action = 0;
+    virtual auto selectPokemon(const std::vector<Pokemon>& team) -> Action = 0;
 };
 
 }  // namespace pokegym::engine::trainer

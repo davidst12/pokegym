@@ -24,7 +24,9 @@ using pokegym::renderer::SdlBattleRenderer;
 
 int main() {
     const std::string player_pk_name = "Charizard";
-    const std::string opponent_pk_name = "Blastoise";
+    const std::string player_pk_name2 = "Bulbasaur";
+    const std::string opponent_pk_name = "Squirtle";
+    const std::string opponent_pk_name2 = "Blastoise";
     const std::string brook_name = "Brook";
     const std::string player_name = "David";
 
@@ -32,10 +34,12 @@ int main() {
     pokemon_manager.loadPokemonData();
 
     auto player_pk_opt = pokemon_manager.getPokemonByName(player_pk_name);
+    auto player_pk_opt2 = pokemon_manager.getPokemonByName(player_pk_name2);
     auto opponent_pk_opt = pokemon_manager.getPokemonByName(opponent_pk_name);
+    auto opponent_pk_opt2 = pokemon_manager.getPokemonByName(opponent_pk_name2);
 
-    std::vector<Pokemon> brook_team{opponent_pk_opt.value()};
-    std::vector<Pokemon> player_team{player_pk_opt.value()};
+    std::vector<Pokemon> brook_team{opponent_pk_opt.value(), opponent_pk_opt2.value()};
+    std::vector<Pokemon> player_team{player_pk_opt.value(), player_pk_opt2.value()};
 
     RandomActionSelector random_selector;
     SdlActionSelector sdl_selector;
