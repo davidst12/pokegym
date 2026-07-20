@@ -10,6 +10,7 @@ target_sources(battle_engine_lib
         src/battle/Battle.cpp
         src/battle/BattleEngine.cpp
         src/battle/DamageCalculator.cpp
+        src/battle/TypeEffectiveness.cpp
         src/manager/PokemonManager.cpp
 )
 

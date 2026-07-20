@@ -1,78 +1,67 @@
 [
     {
-        "move": "Blizzard",
-        "power": 120
-    },
-    {
         "move": "Body Slam",
+        "type": "Normal",
         "power": 85
     },
     {
         "move": "Double-Edge",
+        "type": "Normal",
         "power": 100
     },
     {
         "move": "Fire Blast",
+        "type": "Fire",
         "power": 120
     },
     {
         "move": "Flamethrower",
+        "type": "Fire",
         "power": 95
     },
     {
-        "move": "Harden",
-        "power": 0
-    },
-    {
         "move": "Hyper Beam",
+        "type": "Normal",
         "power": 150
     },
     {
         "move": "Hydro Pump",
+        "type": "Water",
         "power": 120
     },
     {
         "move": "Leech Seed",
+        "type": "Grass",
         "power": 0
     },
     {
         "move": "Mega Drain",
+        "type": "Grass",
         "power": 40
     },
     {
-        "move": "Psychic",
-        "power": 90
-    },
-    {
         "move": "Sleep Powder",
+        "type": "Grass",
         "power": 0
     },
     {
         "move": "Slash",
+        "type": "Normal",
         "power": 70
     },
     {
         "move": "Solar Beam",
+        "type": "Grass",
         "power": 120
     },
     {
-        "move": "String Shot",
-        "power": 0
-    },
-    {
-        "move": "Supersonic",
-        "power": 0
-    },
-    {
         "move": "Surf",
+        "type": "Water",
         "power": 95
     },
     {
-        "move": "Swords Dance",
-        "power": 0
-    },
-    {
         "move": "Tackle",
+        "type": "Normal",
         "power": 35
     }
 ]

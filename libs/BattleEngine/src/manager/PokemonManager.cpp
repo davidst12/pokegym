@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "BattleEngine/pokemon/Types.hpp"
+
 namespace pokegym::engine::manager {
 
 auto PokemonManager::loadPokemonData() -> bool {
@@ -47,13 +49,13 @@ auto PokemonManager::getPokemonByName(const std::string& name) -> std::optional<
         for (const auto& move_name : poke["moves"]) {
             if (moves_db_by_name_.count(move_name)) {
                 const auto& move_data = moves_db_by_name_[move_name];
-                moves.emplace_back(move_data["move"], move_data["power"]);
+                moves.emplace_back(move_data["move"], move_data["type"], move_data["power"]);
             }
         }
 
-        pokemon::Pokemon pokemon(poke["id"], poke["name"], poke["stats"]["speed"],
-                                 poke["stats"]["attack"], poke["stats"]["defense"],
-                                 poke["stats"]["hp"], moves);
+        pokemon::Pokemon pokemon(poke["id"], poke["name"], poke["type"].get<pokemon::Type>(),
+                                 poke["stats"]["speed"], poke["stats"]["attack"],
+                                 poke["stats"]["defense"], poke["stats"]["hp"], moves);
         return pokemon;
     }
 

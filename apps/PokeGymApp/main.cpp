@@ -24,7 +24,7 @@ using pokegym::renderer::SdlBattleRenderer;
 
 int main() {
     const std::string player_pk_name = "Charizard";
-    const std::string player_pk_name2 = "Bulbasaur";
+    const std::string player_pk_name2 = "Venusaur";
     const std::string opponent_pk_name = "Squirtle";
     const std::string opponent_pk_name2 = "Blastoise";
     const std::string brook_name = "Brook";
