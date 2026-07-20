@@ -90,7 +90,7 @@ auto SdlBattleRenderer::run() -> void {
         SDL_RenderClear(renderer_);
         SDL_SetRenderDrawColor(renderer_, 30, 80, 120, 255);
 
-        drawBackground(renderer_, "assets/battle/battle_blank_template.jpg");
+        drawBackground(renderer_);
         drawDialogTextBox(renderer_);
         drawPlayertPokemon(renderer_);
         drawOpponentPokemon(renderer_);
@@ -106,8 +106,15 @@ auto SdlBattleRenderer::run() -> void {
     }
 }
 
-auto SdlBattleRenderer::drawBackground(SDL_Renderer* renderer, const char* path) -> void {
-    SDL_Surface* battle_template_surface = IMG_Load(path);
+auto SdlBattleRenderer::drawBackground(SDL_Renderer* renderer) -> void {
+    SDL_Surface* battle_template_surface;
+    if (action_animation_.state == ActionRequestAnimation::State::ShowActions ||
+        action_animation_.state == ActionRequestAnimation::State::ShowMoves ||
+        action_animation_.state == ActionRequestAnimation::State::ShowPokemons) {
+        battle_template_surface = IMG_Load("assets/battle/battle_selection_blank_template.jpg");
+    } else {
+        battle_template_surface = IMG_Load("assets/battle/battle_blank_template.jpg");
+    }
 
     if (!battle_template_surface)
         return;
@@ -132,9 +139,9 @@ auto SdlBattleRenderer::drawDialogTextBox(SDL_Renderer* renderer) -> void {
         std::vector<SDL_Rect> action_text_boxes{
             {50, 455, 0, 0}, {width_ / 2, 455, 0, 0}, {50, 515, 0, 0}, {width_ / 2, 515, 0, 0}};
         for (int i = 0; i < action_animation_.actions_prompt.size(); ++i) {
-            SDL_Color white{255, 255, 255, 255};
+            SDL_Color black{0, 0, 0, 0};
             SDL_Surface* action_text_surface = TTF_RenderText_Solid(
-                font_medium_, action_animation_.actions_prompt[i].c_str(), white);
+                font_medium_, action_animation_.actions_prompt[i].c_str(), black);
             SDL_Texture* action_text_texture =
                 SDL_CreateTextureFromSurface(renderer, action_text_surface);
 
@@ -148,9 +155,9 @@ auto SdlBattleRenderer::drawDialogTextBox(SDL_Renderer* renderer) -> void {
         std::vector<SDL_Rect> action_text_boxes{
             {50, 455, 0, 0}, {width_ / 2, 455, 0, 0}, {50, 515, 0, 0}, {width_ / 2, 515, 0, 0}};
         for (int i = 0; i < action_animation_.moves_prompt.size(); ++i) {
-            SDL_Color white{255, 255, 255, 255};
+            SDL_Color black{0, 0, 0, 0};
             SDL_Surface* action_text_surface = TTF_RenderText_Solid(
-                font_medium_, action_animation_.moves_prompt[i].c_str(), white);
+                font_medium_, action_animation_.moves_prompt[i].c_str(), black);
             SDL_Texture* action_text_texture =
                 SDL_CreateTextureFromSurface(renderer, action_text_surface);
 
@@ -164,9 +171,9 @@ auto SdlBattleRenderer::drawDialogTextBox(SDL_Renderer* renderer) -> void {
         std::vector<SDL_Rect> action_text_boxes{
             {50, 455, 0, 0}, {width_ / 2, 455, 0, 0}, {50, 515, 0, 0}, {width_ / 2, 515, 0, 0}};
         for (int i = 0; i < action_animation_.pokemon_prompt.size(); ++i) {
-            SDL_Color white{255, 255, 255, 255};
+            SDL_Color black{0, 0, 0, 0};
             SDL_Surface* action_text_surface = TTF_RenderText_Solid(
-                font_medium_, action_animation_.pokemon_prompt[i].c_str(), white);
+                font_medium_, action_animation_.pokemon_prompt[i].c_str(), black);
             SDL_Texture* action_text_texture =
                 SDL_CreateTextureFromSurface(renderer, action_text_surface);
 
@@ -279,7 +286,7 @@ auto SdlBattleRenderer::waitInput() -> bool {
         if (event.type == SDL_QUIT) {
             return true;
         } else if (action_animation_.is_action_requested && event.type == SDL_KEYDOWN) {
-            int selection = -1;
+            int selection = 0;
             switch (event.key.keysym.sym) {
                 case SDLK_1:
                     selection = 1;
@@ -293,8 +300,11 @@ auto SdlBattleRenderer::waitInput() -> bool {
                 case SDLK_4:
                     selection = 4;
                     break;
-                default:
+                case SDLK_b:
                     selection = -1;
+                    break;
+                default:
+                    selection = 0;
             }
             processActionInput(selection);
             break;
@@ -429,6 +439,8 @@ auto SdlBattleRenderer::processActionInput(int selection) -> void {
                 action_animation_.actions_prompt.clear();
                 action_animation_.moves_prompt.clear();
                 action_animation_.pokemon_prompt.clear();
+            } else if (selection == -1) {
+                action_animation_.state = ActionRequestAnimation::State::ShowActions;
             }
             break;
         case ActionRequestAnimation::State::ShowPokemons:
@@ -442,6 +454,8 @@ auto SdlBattleRenderer::processActionInput(int selection) -> void {
                 action_animation_.actions_prompt.clear();
                 action_animation_.moves_prompt.clear();
                 action_animation_.pokemon_prompt.clear();
+            } else if (selection == -1 && !action_animation_.actions_prompt.empty()) {
+                action_animation_.state = ActionRequestAnimation::State::ShowActions;
             }
             break;
         case ActionRequestAnimation::State::Idle:

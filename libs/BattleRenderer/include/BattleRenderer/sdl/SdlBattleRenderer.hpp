@@ -53,7 +53,7 @@ class SdlBattleRenderer : public pokegym::engine::battle::BattleObserver {
     auto drawOpponentPokemon(SDL_Renderer* renderer) -> void;
     auto drawPlayertPokemon(SDL_Renderer* renderer) -> void;
     auto drawDialogTextBox(SDL_Renderer* renderer) -> void;
-    auto drawBackground(SDL_Renderer* renderer, const char* path) -> void;
+    auto drawBackground(SDL_Renderer* renderer) -> void;
 
     auto waitInput() -> bool;
 
